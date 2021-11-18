@@ -1,13 +1,18 @@
-//Vue3 update
-//Orthogonal
-
 <template>
-
-    <canvas id='output'></canvas>
+<div class='container-sm m-0 p-0 bg-white'>
+    <div class='row'>
+        <div class='col-12'>
+            <canvas id='output'></canvas>
+        </div>
+    </div>
+</div>
 
 </template>
 
 <script>
+//import { store } from "../simplestore.js";
+//import { eventBus } from "../main.js";
+//import ReconnectingWebSocket from 'reconnecting-websocket';
 
 export default {
 
@@ -164,8 +169,8 @@ export default {
 
 <style scoped>
 canvas{
-    width:auto;
-    height:100%;
+    width:100%;
+    height:auto;
 }
 
 

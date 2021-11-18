@@ -1,31 +1,49 @@
-//Vue3 updated
-
 <template>
   <div>
-    <!-- A non-rendered component that sets up the streams -->
-  </div>
+    <div><webcam-stream /></div>
+    <div><data-stream /></div>
+</div>
 </template> 
 
 <script>
-
+import WebcamStream from "./WebcamStream.vue";
+import DataStream from "./DataStream.vue";
+import { eventBus } from "../main.js";
 import dayjs from "dayjs";
-import { mapGetters } from 'vuex';
 
 export default {
   name: "Streams",
   components: {
-    
+    WebcamStream,
+    DataStream,
   },
   data(){
     return{
-      connectionChecker: null,
+      
     }
   },
+  computed: {
+    // id() {
+    //   return this.$route.params.id;
+    // },
+    decodedStreams() {
+      return this.$store.getters.getStreams;
+    },
+    streamsObtained() {
+      return this.$store.getters.getStreamsObtained;
+    },
+    videoStream() {
+      return this.$store.getters.getStream("video");
+    },
+    dataStream() {
+      return this.$store.getters.getStream("data");
+    },
+  },
   created(){
-      
+      eventBus.$on('sessionended', this.sessionExpired);
     },
   mounted() {
-    if (this.getStreamsObtained) {
+    if (this.streamsObtained) {
       return;
     }
     try {
@@ -69,7 +87,7 @@ export default {
         _this.$store.dispatch("setConnectionIsDropped", true);
         _this.$store.dispatch("setConnectionDroppedAt", dayjs().unix()); //seconds
         var reconnectEvent = new Event("streams:dropped");
-            document.dispatchEvent(reconnectEvent);
+        document.dispatchEvent(reconnectEvent);
       };
 
       if (lc > lw) {
@@ -97,26 +115,23 @@ export default {
 
     };
 
-    this.connectionChecker = setInterval(wd, 1000);
+    var connectionChecker = setInterval(wd, 1000);
+
+    document.addEventListener("streams:expired", function () {
+      clearInterval(connectionChecker);
+    });
+
 
   },
-  computed: {
-    ...mapGetters([
-      'getStreamsObtained',
-      'getSessionExpired'
-    ]),
-  },
-  watch: {
-    getSessionExpired(expired){
-      if(expired){
-        clearInterval(this.connectionChecker);
-      }
+  methods:{
+    sessionExpired(){
+      var expiredEvent = new Event("streams:expired");
+        document.dispatchEvent(expiredEvent);
     }
   },
-  methods:{
+  watch: {
     
   },
-  
 };
 
 </script>

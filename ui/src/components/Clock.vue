@@ -1,10 +1,14 @@
-//Vue3 update
-
 <template>
+<div id='row'>
+    <!-- <div id='italic'>{{current_time}} Session ends at: {{sessionEndTime}} in: {{current_time_left}}</div> -->
     <div id='sessionTime'> Session ends in: {{current_time_left}}</div>
+    <b-tooltip triggers='hover' :delay="{show:0,hide:0}" target="sessionTime"><p>Session ends at:</p> <p>{{sessionEndTime}}</p></b-tooltip>
+
+</div>
 </template>
 
 <script>
+import { eventBus } from "../main.js";
 
 export default {
 
@@ -77,7 +81,8 @@ export default {
           if(interval > 0){
               return minutes + " min : " + seconds + " secs"; 
           } else {
-              this.$store.dispatch('setSessionExpired', true);
+              eventBus.$emit('stop');
+              eventBus.$emit('sessionended', true);
               clearInterval(this.interval_id);
               return 'ENDED'
           }
